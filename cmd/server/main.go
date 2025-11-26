@@ -24,9 +24,14 @@ func main() {
 	}
 
 	var (
-		addr = net.JoinHostPort(
-			cmd.Config.Bind,
-			cmd.Config.Port)
+		bindAddr = cmd.Config.Bind
+	)
+	// Default to 0.0.0.0 to ensure IPv4 listening in Docker containers
+	if bindAddr == "" {
+		bindAddr = "0.0.0.0"
+	}
+	var (
+		addr   = net.JoinHostPort(bindAddr, cmd.Config.Port)
 		router = cmd.Router(engine.DefaultEngineName)
 	)
 	if err := http.ListenAndServe(addr, router); err != nil {
